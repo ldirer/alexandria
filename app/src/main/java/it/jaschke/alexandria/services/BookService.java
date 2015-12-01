@@ -46,14 +46,14 @@ public class BookService extends IntentService {
     public static final String EAN = "it.jaschke.alexandria.services.extra.EAN";
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FETCH_BOOK_STATUS_OK, FETCH_BOOK_STATUS_SERVER_DOWN, FETCH_BOOK_STATUS_SERVER_INVALID, FETCH_BOOK_STATUS_UNKNOWN, FETCH_BOOK_STATUS_INVALID})
+    @IntDef({FETCH_BOOK_STATUS_OK, FETCH_BOOK_STATUS_SERVER_DOWN, FETCH_BOOK_STATUS_SERVER_INVALID, FETCH_BOOK_STATUS_UNKNOWN, FETCH_BOOK_STATUS_NO_BOOK_FOUND})
     public @interface FetchBookStatus {}
 
     public static final int FETCH_BOOK_STATUS_OK = 0;
     public static final int FETCH_BOOK_STATUS_SERVER_DOWN = 1;
     public static final int FETCH_BOOK_STATUS_SERVER_INVALID = 2;
     public static final int FETCH_BOOK_STATUS_UNKNOWN = 3;
-    public static final int FETCH_BOOK_STATUS_INVALID = 4;
+    public static final int FETCH_BOOK_STATUS_NO_BOOK_FOUND = 4;
 
     public BookService() {
         super("Alexandria");
@@ -103,7 +103,7 @@ public class BookService extends IntentService {
 
         if(bookEntry.getCount()>0){
             bookEntry.close();
-            setFetchBookStatus(getApplicationContext(), FETCH_BOOK_STATUS_OK);
+            setFetchBookStatus(this, FETCH_BOOK_STATUS_OK);
             return;
         }
 
@@ -144,14 +144,14 @@ public class BookService extends IntentService {
             }
 
             if (buffer.length() == 0) {
-                setFetchBookStatus(getApplicationContext(), FETCH_BOOK_STATUS_SERVER_DOWN);
+                setFetchBookStatus(this, FETCH_BOOK_STATUS_SERVER_DOWN);
                 return;
             }
             bookJsonString = buffer.toString();
             parseBookJson(ean, bookJsonString);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
-            setFetchBookStatus(getApplicationContext(), FETCH_BOOK_STATUS_SERVER_DOWN);
+            setFetchBookStatus(this, FETCH_BOOK_STATUS_SERVER_DOWN);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -197,9 +197,9 @@ public class BookService extends IntentService {
                 Log.d(LOG_TAG, "No book found");
                 // TODO: he's using a toast here, mb we could use our empty/error view instead.
                 Intent messageIntent = new Intent(MainActivity.MESSAGE_EVENT);
-                messageIntent.putExtra(MainActivity.MESSAGE_KEY,getResources().getString(R.string.not_found));
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(messageIntent);
-                setFetchBookStatus(getApplicationContext(), FETCH_BOOK_STATUS_OK);
+                messageIntent.putExtra(MainActivity.MESSAGE_KEY, getResources().getString(R.string.not_found));
+                LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
+                setFetchBookStatus(this, FETCH_BOOK_STATUS_NO_BOOK_FOUND);
                 return;
             }
 
@@ -230,11 +230,11 @@ public class BookService extends IntentService {
             if(bookInfo.has(CATEGORIES)){
                 writeBackCategories(ean,bookInfo.getJSONArray(CATEGORIES) );
             }
-            setFetchBookStatus(getApplicationContext(), FETCH_BOOK_STATUS_OK);
+            setFetchBookStatus(this, FETCH_BOOK_STATUS_OK);
 
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error ", e);
-            setFetchBookStatus(getApplicationContext(), FETCH_BOOK_STATUS_SERVER_INVALID);
+            setFetchBookStatus(this, FETCH_BOOK_STATUS_SERVER_INVALID);
         }
     }
 
@@ -247,6 +247,8 @@ public class BookService extends IntentService {
     private static void setFetchBookStatus(Context context, @FetchBookStatus int fetchBookStatus) {
         Log.d(LOG_TAG, "in setFetchBookStatus");
         SharedPreferences.Editor spe = PreferenceManager.getDefaultSharedPreferences(context).edit();
+//        PreferenceManager pm = ;
+//        PreferenceManager.getSharedPreferencesName()
         spe.putInt(context.getString(R.string.pref_fetch_book_status_key), fetchBookStatus);
         spe.commit();
     }

@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -54,11 +55,10 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         public void onReceive(Context context, Intent intent) {
             Log.d(LOG_TAG, "in onReceive (for connectivity state changes)");
             Log.d(LOG_TAG, "Intent action is: " + intent.getAction());
-            if(Utility.isNetworkAvailable(context)) {
+            if (Utility.isNetworkAvailable(context)) {
                 Log.d(LOG_TAG, "We have network!");
                 validateInputAndLaunchService();
-            }
-            else {
+            } else {
                 Log.d(LOG_TAG, "We DO NOT have network...");
                 // Here we don't do anything: if we had network and we displayed a result, we don't want "check your internet connection" to replace it!
             }
@@ -72,6 +72,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     public void onResume() {
         super.onResume();
         getActivity().registerReceiver(mNetworkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.registerOnSharedPreferenceChangeListener(this);
     }
 
 
@@ -79,6 +82,8 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     public void onPause() {
         super.onPause();
         getActivity().unregisterReceiver(mNetworkChangeReceiver);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -93,6 +98,8 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         }
         if (currentInput.length() < 13) {
             clearFields();
+            // Say we have an ISBN 13 and we remove the last digit: we want to clear the result.
+//            restartLoader();
             return;
         }
         //Once we have an ISBN, start a book intent
@@ -107,7 +114,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             Log.d(LOG_TAG, "starting BookIntent service...");
             getActivity().startService(bookIntent);
         }
-        AddBook.this.restartLoader();
+        restartLoader();
     }
 
     @Override
@@ -137,6 +144,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
             @Override
             public void afterTextChanged(Editable s) {
+                clearFields();
                 validateInputAndLaunchService();
             }
         });
@@ -194,11 +202,11 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     @Override
     public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.d(LOG_TAG, "in onCreateLoader");
-        if (ean.getText().length() == 0) {
-            return null;
-        }
+//        if (ean.getText().length() == 0) {
+//            return null;
+//        }
         String eanStr = ean.getText().toString();
-        if (eanStr.length() == 10 && !eanStr.startsWith("978")) {
+        if (eanStr.length() <= 10 && !eanStr.startsWith("978")) {
             eanStr = "978" + eanStr;
         }
         return new CursorLoader(
@@ -249,6 +257,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     }
 
     private void clearFields() {
+        Log.d(LOG_TAG, "in clearFields");
         ((TextView) rootView.findViewById(R.id.bookTitle)).setText("");
         ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText("");
         ((TextView) rootView.findViewById(R.id.authors)).setText("");
@@ -266,6 +275,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d(LOG_TAG, "in onSharedPreferenceChanged, with key: " + key);
         if (key.equals(getString(R.string.pref_fetch_book_status_key))) {
             updateEmptyView();
         }
@@ -291,23 +301,23 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                 Log.d(LOG_TAG, "Display smt for server down");
                 errorMessage = getActivity().getString(R.string.fetch_book_status_server_down);
                 break;
+            case BookService.FETCH_BOOK_STATUS_NO_BOOK_FOUND:
+                Log.d(LOG_TAG, "fetch book status: No book found.");
+                errorMessage = getActivity().getString(R.string.fetch_book_status_no_book_found);
             default:
                 if (!Utility.isNetworkAvailable(getActivity())) {
                     Log.d(LOG_TAG, "Display smt for Internet ra?");
                     errorMessage = getActivity().getString(R.string.fetch_book_status_no_internet);
                 } else {
                     Log.d(LOG_TAG, "Status unknown but there's internet.");
-                    errorMessage = getActivity().getString(R.string.fetch_book_status_no_book_found);
                 }
         }
         TextView emptyView = (TextView) getView().findViewById(R.id.no_book_found);
         if (null != errorMessage) {
             emptyView.setVisibility(View.VISIBLE);
             emptyView.setText(errorMessage);
-        }
-        else {
+        } else {
             emptyView.setVisibility(View.INVISIBLE);
-
         }
     }
 
