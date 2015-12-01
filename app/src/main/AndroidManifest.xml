@@ -33,7 +33,6 @@
         </activity>
 
 
-
         <provider
             android:name=".data.BookProvider"
             android:authorities="it.jaschke.alexandria"

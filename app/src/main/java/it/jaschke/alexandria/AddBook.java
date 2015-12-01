@@ -1,12 +1,14 @@
 package it.jaschke.alexandria;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.annotation.IntDef;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -22,9 +24,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 import it.jaschke.alexandria.data.AlexandriaContract;
 import it.jaschke.alexandria.services.BookService;
@@ -44,8 +43,71 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     private String mScanFormat = "Format:";
     private String mScanContents = "Contents:";
 
+    private BroadcastReceiver mNetworkChangeReceiver = new BroadcastReceiver() {
+        /**
+         * Listen on network events to relaunch the search when internet is available.
+         * Example scenario: you're in plane mode, you search: no internet.
+         * You remove the plane mode, you expect it to launch the search without having to do
+         * something weird like delete/retype the last digit.
+         */
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(LOG_TAG, "in onReceive (for connectivity state changes)");
+            Log.d(LOG_TAG, "Intent action is: " + intent.getAction());
+            if(Utility.isNetworkAvailable(context)) {
+                Log.d(LOG_TAG, "We have network!");
+                validateInputAndLaunchService();
+            }
+            else {
+                Log.d(LOG_TAG, "We DO NOT have network...");
+                // Here we don't do anything: if we had network and we displayed a result, we don't want "check your internet connection" to replace it!
+            }
+        }
+    };
 
     public AddBook() {
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(mNetworkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(mNetworkChangeReceiver);
+    }
+
+    /**
+     * Check if the current input is a valid ISBN number.
+     * If so, launch the fetching service and restarts the loader.
+     */
+    public void validateInputAndLaunchService() {
+        String currentInput = ean.getText().toString();
+        //catch isbn10 numbers
+        if (currentInput.length() == 10 && !currentInput.startsWith("978")) {
+            currentInput = "978" + currentInput;
+        }
+        if (currentInput.length() < 13) {
+            clearFields();
+            return;
+        }
+        //Once we have an ISBN, start a book intent
+
+        // First we want to reset the status of the task.
+        BookService.resetFetchBookStatus(getActivity());
+        // If we don't have internet, there's no point in proceeding.
+        if (Utility.isNetworkAvailable(getActivity())) {
+            Intent bookIntent = new Intent(getActivity(), BookService.class);
+            bookIntent.putExtra(BookService.EAN, currentInput);
+            bookIntent.setAction(BookService.FETCH_BOOK);
+            Log.d(LOG_TAG, "starting BookIntent service...");
+            getActivity().startService(bookIntent);
+        }
+        AddBook.this.restartLoader();
     }
 
     @Override
@@ -75,28 +137,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
             @Override
             public void afterTextChanged(Editable s) {
-                String ean = s.toString();
-                //catch isbn10 numbers
-                if (ean.length() == 10 && !ean.startsWith("978")) {
-                    ean = "978" + ean;
-                }
-                if (ean.length() < 13) {
-                    clearFields();
-                    return;
-                }
-                //Once we have an ISBN, start a book intent
-
-                // First we want to reset the status of the task.
-                BookService.resetFetchBookStatus(getActivity());
-                // If we don't have internet, there's no point in proceeding.
-                if (Utility.isNetworkAvailable(getActivity())) {
-                    Intent bookIntent = new Intent(getActivity(), BookService.class);
-                    bookIntent.putExtra(BookService.EAN, ean);
-                    bookIntent.setAction(BookService.FETCH_BOOK);
-                    Log.d(LOG_TAG, "starting BookIntent service...");
-                    getActivity().startService(bookIntent);
-                }
-                AddBook.this.restartLoader();
+                validateInputAndLaunchService();
             }
         });
 
@@ -263,4 +304,5 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             emptyView.setText(errorMessage);
         }
     }
+
 }
