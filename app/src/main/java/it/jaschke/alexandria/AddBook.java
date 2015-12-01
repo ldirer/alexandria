@@ -218,7 +218,8 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             updateEmptyView();
             return;
         }
-
+        // Clear a possible pre-existing view.
+        updateEmptyView();
         String bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.TITLE));
         ((TextView) rootView.findViewById(R.id.bookTitle)).setText(bookTitle);
 
@@ -295,13 +296,18 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                     Log.d(LOG_TAG, "Display smt for Internet ra?");
                     errorMessage = getActivity().getString(R.string.fetch_book_status_no_internet);
                 } else {
+                    Log.d(LOG_TAG, "Status unknown but there's internet.");
                     errorMessage = getActivity().getString(R.string.fetch_book_status_no_book_found);
                 }
         }
+        TextView emptyView = (TextView) getView().findViewById(R.id.no_book_found);
         if (null != errorMessage) {
-            TextView emptyView = (TextView) getView().findViewById(R.id.no_book_found);
             emptyView.setVisibility(View.VISIBLE);
             emptyView.setText(errorMessage);
+        }
+        else {
+            emptyView.setVisibility(View.INVISIBLE);
+
         }
     }
 

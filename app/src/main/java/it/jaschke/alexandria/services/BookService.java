@@ -103,6 +103,7 @@ public class BookService extends IntentService {
 
         if(bookEntry.getCount()>0){
             bookEntry.close();
+            setFetchBookStatus(getApplicationContext(), FETCH_BOOK_STATUS_OK);
             return;
         }
 
