@@ -2,9 +2,13 @@ package it.jaschke.alexandria.services;
 
 import android.app.IntentService;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.preference.PreferenceManager;
+import android.support.annotation.IntDef;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -16,11 +20,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 import it.jaschke.alexandria.MainActivity;
 import it.jaschke.alexandria.R;
+import it.jaschke.alexandria.Utility;
 import it.jaschke.alexandria.data.AlexandriaContract;
 
 
@@ -31,12 +38,22 @@ import it.jaschke.alexandria.data.AlexandriaContract;
  */
 public class BookService extends IntentService {
 
-    private final String LOG_TAG = BookService.class.getSimpleName();
+    private static final String LOG_TAG = BookService.class.getSimpleName();
 
     public static final String FETCH_BOOK = "it.jaschke.alexandria.services.action.FETCH_BOOK";
     public static final String DELETE_BOOK = "it.jaschke.alexandria.services.action.DELETE_BOOK";
 
     public static final String EAN = "it.jaschke.alexandria.services.extra.EAN";
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({FETCH_BOOK_STATUS_OK, FETCH_BOOK_STATUS_SERVER_DOWN, FETCH_BOOK_STATUS_SERVER_INVALID, FETCH_BOOK_STATUS_UNKNOWN, FETCH_BOOK_STATUS_INVALID})
+    public @interface FetchBookStatus {}
+
+    public static final int FETCH_BOOK_STATUS_OK = 0;
+    public static final int FETCH_BOOK_STATUS_SERVER_DOWN = 1;
+    public static final int FETCH_BOOK_STATUS_SERVER_INVALID = 2;
+    public static final int FETCH_BOOK_STATUS_UNKNOWN = 3;
+    public static final int FETCH_BOOK_STATUS_INVALID = 4;
 
     public BookService() {
         super("Alexandria");
@@ -114,6 +131,7 @@ public class BookService extends IntentService {
             InputStream inputStream = urlConnection.getInputStream();
             StringBuffer buffer = new StringBuffer();
             if (inputStream == null) {
+                // No data returned by the server.
                 return;
             }
 
@@ -125,11 +143,14 @@ public class BookService extends IntentService {
             }
 
             if (buffer.length() == 0) {
+                setFetchBookStatus(getApplicationContext(), FETCH_BOOK_STATUS_SERVER_DOWN);
                 return;
             }
             bookJsonString = buffer.toString();
-        } catch (Exception e) {
+            parseBookJson(ean, bookJsonString);
+        } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
+            setFetchBookStatus(getApplicationContext(), FETCH_BOOK_STATUS_SERVER_DOWN);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -144,6 +165,9 @@ public class BookService extends IntentService {
 
         }
 
+    }
+
+    private void parseBookJson(String ean, String bookJsonString) {
         final String ITEMS = "items";
 
         final String VOLUME_INFO = "volumeInfo";
@@ -155,16 +179,26 @@ public class BookService extends IntentService {
         final String CATEGORIES = "categories";
         final String IMG_URL_PATH = "imageLinks";
         final String IMG_URL = "thumbnail";
+        // TODO: add key for http response code.
 
         try {
             JSONObject bookJson = new JSONObject(bookJsonString);
+            // TODOWe look for http errors first.
+//            bookJson.has(HTTP_CODE) {}
+
+
+
+
             JSONArray bookArray;
             if(bookJson.has(ITEMS)){
                 bookArray = bookJson.getJSONArray(ITEMS);
             }else{
+                Log.d(LOG_TAG, "No book found");
+                // TODO: he's using a toast here, mb we could use our empty/error view instead.
                 Intent messageIntent = new Intent(MainActivity.MESSAGE_EVENT);
                 messageIntent.putExtra(MainActivity.MESSAGE_KEY,getResources().getString(R.string.not_found));
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(messageIntent);
+                setFetchBookStatus(getApplicationContext(), FETCH_BOOK_STATUS_OK);
                 return;
             }
 
@@ -195,10 +229,35 @@ public class BookService extends IntentService {
             if(bookInfo.has(CATEGORIES)){
                 writeBackCategories(ean,bookInfo.getJSONArray(CATEGORIES) );
             }
+            setFetchBookStatus(getApplicationContext(), FETCH_BOOK_STATUS_OK);
 
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error ", e);
+            setFetchBookStatus(getApplicationContext(), FETCH_BOOK_STATUS_SERVER_INVALID);
         }
+    }
+
+    /** Taken from Sunshine.
+     * Sets the fetch book status into shared preference.  This function should not be called from
+     * the UI thread because it uses commit to write to the shared preferences.
+     * @param context Context to get the default shared preferences from.
+     * @param fetchBookStatus The IntDef value to set
+     */
+    private static void setFetchBookStatus(Context context, @FetchBookStatus int fetchBookStatus) {
+        Log.d(LOG_TAG, "in setFetchBookStatus");
+        SharedPreferences.Editor spe = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        spe.putInt(context.getString(R.string.pref_fetch_book_status_key), fetchBookStatus);
+        spe.commit();
+    }
+
+    /**
+     * Reset the status of the fetch book task in the shared preferences.
+     * @param context
+     */
+
+    public static void resetFetchBookStatus(Context context) {
+        Log.d(LOG_TAG, "in resetFetchBookStatus");
+        setFetchBookStatus(context, FETCH_BOOK_STATUS_UNKNOWN);
     }
 
     private void writeBackBook(String ean, String title, String subtitle, String desc, String imgUrl) {
@@ -212,22 +271,20 @@ public class BookService extends IntentService {
     }
 
     private void writeBackAuthors(String ean, JSONArray jsonArray) throws JSONException {
-        ContentValues values= new ContentValues();
         for (int i = 0; i < jsonArray.length(); i++) {
+            ContentValues values= new ContentValues();
             values.put(AlexandriaContract.AuthorEntry._ID, ean);
             values.put(AlexandriaContract.AuthorEntry.AUTHOR, jsonArray.getString(i));
             getContentResolver().insert(AlexandriaContract.AuthorEntry.CONTENT_URI, values);
-            values= new ContentValues();
         }
     }
 
     private void writeBackCategories(String ean, JSONArray jsonArray) throws JSONException {
-        ContentValues values= new ContentValues();
         for (int i = 0; i < jsonArray.length(); i++) {
+            ContentValues values= new ContentValues();
             values.put(AlexandriaContract.CategoryEntry._ID, ean);
             values.put(AlexandriaContract.CategoryEntry.CATEGORY, jsonArray.getString(i));
             getContentResolver().insert(AlexandriaContract.CategoryEntry.CONTENT_URI, values);
-            values= new ContentValues();
         }
     }
  }
