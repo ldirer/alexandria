@@ -10,6 +10,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import it.jaschke.alexandria.services.DownloadImage;
 
 public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = "INTENT_TO_SCAN_ACTIVITY";
+    private static final String LOG_TAG = AddBook.class.getSimpleName();
     private EditText ean;
     private final int LOADER_ID = 1;
     private View rootView;
@@ -133,11 +135,13 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     }
 
     private void restartLoader(){
+        Log.d(LOG_TAG, "in restartLoader");
         getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 
     @Override
     public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.d(LOG_TAG, "in onCreateLoader");
         if(ean.getText().length()==0){
             return null;
         }
@@ -157,6 +161,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
+        Log.d(LOG_TAG, "in onLoadFinished");
         if (!data.moveToFirst()) {
             return;
         }
