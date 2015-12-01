@@ -99,7 +99,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         if (currentInput.length() < 13) {
             clearFields();
             // Say we have an ISBN 13 and we remove the last digit: we want to clear the result.
-//            restartLoader();
+            // We need to restart the loader otherwise it'll re-populate the views.
+            BookService.resetFetchBookStatus(getActivity());
+            restartLoader();
             return;
         }
         //Once we have an ISBN, start a book intent
@@ -304,6 +306,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             case BookService.FETCH_BOOK_STATUS_NO_BOOK_FOUND:
                 Log.d(LOG_TAG, "fetch book status: No book found.");
                 errorMessage = getActivity().getString(R.string.fetch_book_status_no_book_found);
+                break;
             default:
                 if (!Utility.isNetworkAvailable(getActivity())) {
                     Log.d(LOG_TAG, "Display smt for Internet ra?");

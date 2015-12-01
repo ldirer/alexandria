@@ -90,6 +90,7 @@ public class BookService extends IntentService {
     private void fetchBook(String ean) {
 
         if(ean.length()!=13){
+            setFetchBookStatus(this, FETCH_BOOK_STATUS_OK);
             return;
         }
 
