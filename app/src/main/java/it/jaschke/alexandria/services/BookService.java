@@ -27,7 +27,6 @@ import java.net.URL;
 
 import it.jaschke.alexandria.MainActivity;
 import it.jaschke.alexandria.R;
-import it.jaschke.alexandria.Utility;
 import it.jaschke.alexandria.data.AlexandriaContract;
 
 
@@ -63,12 +62,16 @@ public class BookService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
-            if (FETCH_BOOK.equals(action)) {
-                final String ean = intent.getStringExtra(EAN);
-                fetchBook(ean);
-            } else if (DELETE_BOOK.equals(action)) {
-                final String ean = intent.getStringExtra(EAN);
-                deleteBook(ean);
+            switch (action) {
+                case FETCH_BOOK: {
+                    final String ean = intent.getStringExtra(EAN);
+                    fetchBook(ean);
+                    break;
+                }
+                case DELETE_BOOK: {
+                    final String ean = intent.getStringExtra(EAN);
+                    deleteBook(ean);
+                }
             }
         }
     }
@@ -261,13 +264,18 @@ public class BookService extends IntentService {
         setFetchBookStatus(context, FETCH_BOOK_STATUS_UNKNOWN);
     }
 
+    /**
+     * Write a book to the database. Note a book written to the database is not added to the user's
+     * list unless a boolean field indicates so.
+     */
     private void writeBackBook(String ean, String title, String subtitle, String desc, String imgUrl) {
         ContentValues values= new ContentValues();
         values.put(AlexandriaContract.BookEntry._ID, ean);
-        values.put(AlexandriaContract.BookEntry.TITLE, title);
-        values.put(AlexandriaContract.BookEntry.IMAGE_URL, imgUrl);
-        values.put(AlexandriaContract.BookEntry.SUBTITLE, subtitle);
-        values.put(AlexandriaContract.BookEntry.DESC, desc);
+        values.put(AlexandriaContract.BookEntry.COLUMN_TITLE, title);
+        values.put(AlexandriaContract.BookEntry.COLUMN_IMAGE_URL, imgUrl);
+        values.put(AlexandriaContract.BookEntry.COLUMN_SUBTITLE, subtitle);
+        values.put(AlexandriaContract.BookEntry.COLUMN_DESC, desc);
+        values.put(AlexandriaContract.BookEntry.COLUMN_BOOK_IN_LIST, 0);
         getContentResolver().insert(AlexandriaContract.BookEntry.CONTENT_URI,values);
     }
 
@@ -275,7 +283,7 @@ public class BookService extends IntentService {
         for (int i = 0; i < jsonArray.length(); i++) {
             ContentValues values= new ContentValues();
             values.put(AlexandriaContract.AuthorEntry._ID, ean);
-            values.put(AlexandriaContract.AuthorEntry.AUTHOR, jsonArray.getString(i));
+            values.put(AlexandriaContract.AuthorEntry.COLUMN_AUTHOR, jsonArray.getString(i));
             getContentResolver().insert(AlexandriaContract.AuthorEntry.CONTENT_URI, values);
         }
     }

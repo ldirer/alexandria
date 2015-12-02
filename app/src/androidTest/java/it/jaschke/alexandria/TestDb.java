@@ -45,10 +45,10 @@ public class TestDb extends AndroidTestCase {
 
         String[] columns = {
                 AlexandriaContract.BookEntry._ID,
-                AlexandriaContract.BookEntry.TITLE,
-                AlexandriaContract.BookEntry.IMAGE_URL,
-                AlexandriaContract.BookEntry.SUBTITLE,
-                AlexandriaContract.BookEntry.DESC
+                AlexandriaContract.BookEntry.COLUMN_TITLE,
+                AlexandriaContract.BookEntry.COLUMN_IMAGE_URL,
+                AlexandriaContract.BookEntry.COLUMN_SUBTITLE,
+                AlexandriaContract.BookEntry.COLUMN_DESC
         };
 
         // A cursor is your primary interface to the query results.
@@ -71,7 +71,7 @@ public class TestDb extends AndroidTestCase {
 
         columns = new String[]{
                 AlexandriaContract.AuthorEntry._ID,
-                AlexandriaContract.AuthorEntry.AUTHOR
+                AlexandriaContract.AuthorEntry.COLUMN_AUTHOR
         };
 
         cursor = db.query(
@@ -130,10 +130,10 @@ public class TestDb extends AndroidTestCase {
 
         final ContentValues values = new ContentValues();
         values.put(AlexandriaContract.BookEntry._ID, ean);
-        values.put(AlexandriaContract.BookEntry.TITLE, title);
-        values.put(AlexandriaContract.BookEntry.IMAGE_URL, imgUrl);
-        values.put(AlexandriaContract.BookEntry.SUBTITLE, subtitle);
-        values.put(AlexandriaContract.BookEntry.DESC, desc);
+        values.put(AlexandriaContract.BookEntry.COLUMN_TITLE, title);
+        values.put(AlexandriaContract.BookEntry.COLUMN_IMAGE_URL, imgUrl);
+        values.put(AlexandriaContract.BookEntry.COLUMN_SUBTITLE, subtitle);
+        values.put(AlexandriaContract.BookEntry.COLUMN_DESC, desc);
 
         return values;
     }
@@ -142,7 +142,7 @@ public class TestDb extends AndroidTestCase {
 
         final ContentValues values= new ContentValues();
         values.put(AlexandriaContract.AuthorEntry._ID, ean);
-        values.put(AlexandriaContract.AuthorEntry.AUTHOR, author);
+        values.put(AlexandriaContract.AuthorEntry.COLUMN_AUTHOR, author);
 
         return values;
     }
@@ -159,11 +159,11 @@ public class TestDb extends AndroidTestCase {
     public static ContentValues getFullDetailValues() {
 
         final ContentValues values= new ContentValues();
-        values.put(AlexandriaContract.BookEntry.TITLE, title);
-        values.put(AlexandriaContract.BookEntry.IMAGE_URL, imgUrl);
-        values.put(AlexandriaContract.BookEntry.SUBTITLE, subtitle);
-        values.put(AlexandriaContract.BookEntry.DESC, desc);
-        values.put(AlexandriaContract.AuthorEntry.AUTHOR, author);
+        values.put(AlexandriaContract.BookEntry.COLUMN_TITLE, title);
+        values.put(AlexandriaContract.BookEntry.COLUMN_IMAGE_URL, imgUrl);
+        values.put(AlexandriaContract.BookEntry.COLUMN_SUBTITLE, subtitle);
+        values.put(AlexandriaContract.BookEntry.COLUMN_DESC, desc);
+        values.put(AlexandriaContract.AuthorEntry.COLUMN_AUTHOR, author);
         values.put(AlexandriaContract.CategoryEntry.CATEGORY, category);
         return values;
     }
@@ -171,9 +171,9 @@ public class TestDb extends AndroidTestCase {
     public static ContentValues getFullListValues() {
 
         final ContentValues values= new ContentValues();
-        values.put(AlexandriaContract.BookEntry.TITLE, title);
-        values.put(AlexandriaContract.BookEntry.IMAGE_URL, imgUrl);
-        values.put(AlexandriaContract.AuthorEntry.AUTHOR, author);
+        values.put(AlexandriaContract.BookEntry.COLUMN_TITLE, title);
+        values.put(AlexandriaContract.BookEntry.COLUMN_IMAGE_URL, imgUrl);
+        values.put(AlexandriaContract.AuthorEntry.COLUMN_AUTHOR, author);
         values.put(AlexandriaContract.CategoryEntry.CATEGORY, category);
         return values;
     }

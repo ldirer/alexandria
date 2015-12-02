@@ -2,6 +2,7 @@ package it.jaschke.alexandria;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -173,6 +174,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         rootView.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // TODO: Add da book!!
+                String eanStr = ean.getText().toString();
+                addBookToList(eanStr);
                 ean.setText("");
             }
         });
@@ -194,6 +198,21 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         }
 
         return rootView;
+    }
+
+    /**
+     * Add a book that is already in the database to the user's list by changing a boolean field.
+     * @param eanStr: the ISBN-13 number of the book.
+     */
+    private void addBookToList(String eanStr) {
+        ContentValues bookValues = new ContentValues();
+        bookValues.put(AlexandriaContract.BookEntry.COLUMN_BOOK_IN_LIST, 1);
+        getContext().getContentResolver().update(
+                AlexandriaContract.BookEntry.buildBookUri(Long.parseLong(eanStr)),
+                bookValues,
+                null,
+                null
+        );
     }
 
     private void restartLoader() {
@@ -230,17 +249,17 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         }
         // Clear a possible pre-existing view.
         updateEmptyView();
-        String bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.TITLE));
+        String bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.COLUMN_TITLE));
         ((TextView) rootView.findViewById(R.id.bookTitle)).setText(bookTitle);
 
-        String bookSubTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.SUBTITLE));
+        String bookSubTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.COLUMN_SUBTITLE));
         ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText(bookSubTitle);
 
-        String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
+        String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.COLUMN_AUTHOR));
         String[] authorsArr = authors.split(",");
         ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
         ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",", "\n"));
-        String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
+        String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.COLUMN_IMAGE_URL));
         if (Patterns.WEB_URL.matcher(imgUrl).matches()) {
             new DownloadImage((ImageView) rootView.findViewById(R.id.bookCover)).execute(imgUrl);
             rootView.findViewById(R.id.bookCover).setVisibility(View.VISIBLE);

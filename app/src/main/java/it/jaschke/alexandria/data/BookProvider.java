@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.util.Log;
 
 /**
  * Created by saj on 24/12/14.
@@ -140,11 +139,11 @@ public class BookProvider extends ContentProvider {
                 break;
             case BOOK_FULLDETAIL:
                 String[] bfd_projection ={
-                    AlexandriaContract.BookEntry.TABLE_NAME + "." + AlexandriaContract.BookEntry.TITLE,
-                    AlexandriaContract.BookEntry.TABLE_NAME + "." + AlexandriaContract.BookEntry.SUBTITLE,
-                    AlexandriaContract.BookEntry.TABLE_NAME + "." + AlexandriaContract.BookEntry.IMAGE_URL,
-                    AlexandriaContract.BookEntry.TABLE_NAME + "." + AlexandriaContract.BookEntry.DESC,
-                    "group_concat(DISTINCT " + AlexandriaContract.AuthorEntry.TABLE_NAME+ "."+ AlexandriaContract.AuthorEntry.AUTHOR +") as " + AlexandriaContract.AuthorEntry.AUTHOR,
+                    AlexandriaContract.BookEntry.TABLE_NAME + "." + AlexandriaContract.BookEntry.COLUMN_TITLE,
+                    AlexandriaContract.BookEntry.TABLE_NAME + "." + AlexandriaContract.BookEntry.COLUMN_SUBTITLE,
+                    AlexandriaContract.BookEntry.TABLE_NAME + "." + AlexandriaContract.BookEntry.COLUMN_IMAGE_URL,
+                    AlexandriaContract.BookEntry.TABLE_NAME + "." + AlexandriaContract.BookEntry.COLUMN_DESC,
+                    "group_concat(DISTINCT " + AlexandriaContract.AuthorEntry.TABLE_NAME+ "."+ AlexandriaContract.AuthorEntry.COLUMN_AUTHOR +") as " + AlexandriaContract.AuthorEntry.COLUMN_AUTHOR,
                     "group_concat(DISTINCT " + AlexandriaContract.CategoryEntry.TABLE_NAME+ "."+ AlexandriaContract.CategoryEntry.CATEGORY +") as " + AlexandriaContract.CategoryEntry.CATEGORY
                 };
                 retCursor = bookFull.query(dbHelper.getReadableDatabase(),
@@ -157,9 +156,9 @@ public class BookProvider extends ContentProvider {
                 break;
             case BOOK_FULL:
                 String[] bf_projection ={
-                        AlexandriaContract.BookEntry.TABLE_NAME + "." + AlexandriaContract.BookEntry.TITLE,
-                        AlexandriaContract.BookEntry.TABLE_NAME + "." + AlexandriaContract.BookEntry.IMAGE_URL,
-                        "group_concat(DISTINCT " + AlexandriaContract.AuthorEntry.TABLE_NAME+ "."+ AlexandriaContract.AuthorEntry.AUTHOR + ") as " + AlexandriaContract.AuthorEntry.AUTHOR,
+                        AlexandriaContract.BookEntry.TABLE_NAME + "." + AlexandriaContract.BookEntry.COLUMN_TITLE,
+                        AlexandriaContract.BookEntry.TABLE_NAME + "." + AlexandriaContract.BookEntry.COLUMN_IMAGE_URL,
+                        "group_concat(DISTINCT " + AlexandriaContract.AuthorEntry.TABLE_NAME+ "."+ AlexandriaContract.AuthorEntry.COLUMN_AUTHOR + ") as " + AlexandriaContract.AuthorEntry.COLUMN_AUTHOR,
                         "group_concat(DISTINCT " + AlexandriaContract.CategoryEntry.TABLE_NAME+ "."+ AlexandriaContract.CategoryEntry.CATEGORY +") as " + AlexandriaContract.CategoryEntry.CATEGORY
                 };
                 retCursor = bookFull.query(dbHelper.getReadableDatabase(),
@@ -285,6 +284,13 @@ public class BookProvider extends ContentProvider {
         switch (match) {
             case BOOK:
                 rowsUpdated = db.update(AlexandriaContract.BookEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            case BOOK_ID:
+                rowsUpdated = db.update(
+                        AlexandriaContract.BookEntry.TABLE_NAME,
+                        values,
+                        AlexandriaContract.BookEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
                         selectionArgs);
                 break;
             case AUTHOR:
