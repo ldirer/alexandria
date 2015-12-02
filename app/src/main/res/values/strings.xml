@@ -18,7 +18,7 @@
     <string name="input_hint">Insert ISBN-13. Digits only.</string>
     <string name="book_cover">Bookcover</string>
 
-    <string name="ok_button">Next</string>
+    <string name="save_button">Add book</string>
     <string name="cancel_button">Cancel</string>
     <string name="not_found">No Book found</string>
     <string name="search">Search</string>
@@ -39,4 +39,5 @@
     <string name="fetch_book_status_no_internet">The network is not available.
         We can only tell you that this number does not match any book already in your list!</string>
     <string name="fetch_book_status_no_book_found">We did not find any book matching this ISBN number. Please check again that you entered a correct ISBN-13 number.</string>
+    <string name="clear_button">Clear</string>
 </resources>

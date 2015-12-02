@@ -115,26 +115,28 @@
             android:layout_alignParentRight="true"
             >
 
-            <ImageButton
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:contentDescription="@string/cancel_button"
-                android:layout_weight="1"
-                android:src="@drawable/ic_action_discard"
-                style="?android:attr/buttonBarButtonStyle"
-                android:id="@+id/delete_button"
+                android:text="@string/clear_button"
                 android:visibility="invisible"
+                android:layout_weight="1"
+                android:id="@+id/clear_button"
+                android:drawableStart="@drawable/ic_action_discard"
+                android:drawableLeft="@drawable/ic_action_discard"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_gravity="bottom"
                 />
 
-            <ImageButton
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:contentDescription="@string/ok_button"
-                android:text="@string/ok_button"
+                android:text="@string/save_button"
+                android:visibility="invisible"
                 android:layout_weight="1"
                 android:id="@+id/save_button"
-                android:visibility="invisible"
-                android:src="@drawable/ic_action_accept"
+                android:drawableEnd="@drawable/ic_action_accept"
+                android:drawableRight="@drawable/ic_action_accept"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_gravity="bottom"
                 />

@@ -185,11 +185,8 @@ public class BookService extends IntentService {
 
         try {
             JSONObject bookJson = new JSONObject(bookJsonString);
-            // TODOWe look for http errors first.
+            // TODO We look for http errors first.
 //            bookJson.has(HTTP_CODE) {}
-
-
-
 
             JSONArray bookArray;
             if(bookJson.has(ITEMS)){
