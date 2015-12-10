@@ -22,15 +22,16 @@ public class DbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_BOOK_TABLE = "CREATE TABLE " + AlexandriaContract.BookEntry.TABLE_NAME + " ("+
                 AlexandriaContract.BookEntry._ID + " INTEGER PRIMARY KEY," +
-                AlexandriaContract.BookEntry.TITLE + " TEXT NOT NULL," +
-                AlexandriaContract.BookEntry.SUBTITLE + " TEXT ," +
-                AlexandriaContract.BookEntry.DESC + " TEXT ," +
-                AlexandriaContract.BookEntry.IMAGE_URL + " TEXT, " +
+                AlexandriaContract.BookEntry.COLUMN_TITLE + " TEXT NOT NULL," +
+                AlexandriaContract.BookEntry.COLUMN_SUBTITLE + " TEXT ," +
+                AlexandriaContract.BookEntry.COLUMN_DESC + " TEXT ," +
+                AlexandriaContract.BookEntry.COLUMN_IMAGE_URL + " TEXT, " +
+                AlexandriaContract.BookEntry.COLUMN_BOOK_IN_LIST + " INTEGER," +
                 "UNIQUE ("+ AlexandriaContract.BookEntry._ID +") ON CONFLICT IGNORE)";
 
         final String SQL_CREATE_AUTHOR_TABLE = "CREATE TABLE " + AlexandriaContract.AuthorEntry.TABLE_NAME + " ("+
                 AlexandriaContract.AuthorEntry._ID + " INTEGER," +
-                AlexandriaContract.AuthorEntry.AUTHOR + " TEXT," +
+                AlexandriaContract.AuthorEntry.COLUMN_AUTHOR + " TEXT," +
                 " FOREIGN KEY (" + AlexandriaContract.AuthorEntry._ID + ") REFERENCES " +
                 AlexandriaContract.BookEntry.TABLE_NAME + " (" + AlexandriaContract.BookEntry._ID + "))";
 

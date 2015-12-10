@@ -7,13 +7,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 import it.jaschke.alexandria.api.BookListAdapter;
 import it.jaschke.alexandria.api.Callback;
@@ -43,8 +45,8 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
         Cursor cursor = getActivity().getContentResolver().query(
                 AlexandriaContract.BookEntry.CONTENT_URI,
                 null, // leaving "columns" null just returns all the columns.
-                null, // cols for "where" clause
-                null, // values for "where" clause
+                AlexandriaContract.BookEntry.COLUMN_BOOK_IN_LIST + " = ?", // cols for "where" clause
+                new String[] {"1"}, // values for "where" clause
                 null  // sort order
         );
 
@@ -85,28 +87,26 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String selectionStr = AlexandriaContract.BookEntry.COLUMN_BOOK_IN_LIST + " = ?";
+        ArrayList<String> selectionArgs = new ArrayList<String>();
+        selectionArgs.add("1");
 
-        final String selection = AlexandriaContract.BookEntry.TITLE +" LIKE ? OR " + AlexandriaContract.BookEntry.SUBTITLE + " LIKE ? ";
+        String searchStringSelection = AlexandriaContract.BookEntry.COLUMN_TITLE +" LIKE ? OR " + AlexandriaContract.BookEntry.COLUMN_SUBTITLE + " LIKE ? ";
         String searchString =searchText.getText().toString();
 
         if(searchString.length()>0){
             searchString = "%"+searchString+"%";
-            return new CursorLoader(
-                    getActivity(),
-                    AlexandriaContract.BookEntry.CONTENT_URI,
-                    null,
-                    selection,
-                    new String[]{searchString,searchString},
-                    null
-            );
+            selectionStr += " AND " + searchStringSelection;
+            selectionArgs.add(searchString);
+            selectionArgs.add(searchString);
         }
 
         return new CursorLoader(
                 getActivity(),
                 AlexandriaContract.BookEntry.CONTENT_URI,
                 null,
-                null,
-                null,
+                selectionStr,
+                (String[]) selectionArgs.toArray(),
                 null
         );
     }
