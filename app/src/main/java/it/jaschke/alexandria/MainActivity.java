@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
+    //TODO: WAT? This probably should not exist!
     @Override
     public void onBackPressed() {
         if(getSupportFragmentManager().getBackStackEntryCount()<2){

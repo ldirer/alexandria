@@ -33,17 +33,22 @@
         android:saveEnabled="true" />
 
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/listOfBooks"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignRight="@id/searchButton"
+        android:layout_alignEnd="@id/searchButton"
         android:layout_below="@+id/searchText"
         android:layout_marginLeft="0dp"
-        android:layout_toRightOf="@id/searchButton" />
+        android:layout_marginStart="0dp"
+        android:layout_toRightOf="@id/searchButton"
+        android:layout_toEndOf="@id/searchButton"
+        />
 
 
 </RelativeLayout>
