@@ -120,8 +120,12 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         shareIntent.setType("text/plain");
+        //TODO: use string resources to format strings.
         shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text)+bookTitle);
-        shareActionProvider.setShareIntent(shareIntent);
+        if (null != shareActionProvider) {
+            // We check that we've been through onCreateOptionsMenu already.
+            shareActionProvider.setShareIntent(shareIntent);
+        }
 
         // TODO: WAT? check what backbutton is. Best practice is DO NOT TOUCH DA ACTUAL BACK BUTTON.
         if(rootView.findViewById(R.id.right_container)!=null){
