@@ -1,5 +1,6 @@
 package it.jaschke.alexandria;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -8,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import it.jaschke.alexandria.R;
+import it.jaschke.alexandria.data.AlexandriaContract;
 import it.jaschke.alexandria.services.BookService;
 
 public class Utility {
@@ -42,5 +44,37 @@ public class Utility {
         SharedPreferences bookStatusPref = PreferenceManager.getDefaultSharedPreferences(c);
         return bookStatusPref.getInt(c.getString(R.string.pref_fetch_book_status_key),
                 BookService.FETCH_BOOK_STATUS_UNKNOWN);
+    }
+
+    /**
+     * Add a book that is already in the database to the user's list by changing a boolean field.
+     * @param context: a context to get the content resolver from.
+     * @param eanStr: the ISBN-13 number of the book.
+     */
+    static void addBookToList(Context context, String eanStr) {
+        ContentValues bookValues = new ContentValues();
+        bookValues.put(AlexandriaContract.BookEntry.COLUMN_BOOK_IN_LIST, 1);
+        context.getContentResolver().update(
+                AlexandriaContract.BookEntry.buildBookUri(Long.parseLong(eanStr)),
+                bookValues,
+                null,
+                null
+        );
+    }
+
+    /**
+     * Remove a book that is already in the database from the user's list by changing a boolean field.
+     * @param context: a context to get the content resolver from.
+     * @param eanStr: the ISBN-13 number of the book.
+     */
+    static void removeBookFromList(Context context, String eanStr) {
+        ContentValues bookValues = new ContentValues();
+        bookValues.put(AlexandriaContract.BookEntry.COLUMN_BOOK_IN_LIST, 0);
+        context.getContentResolver().update(
+                AlexandriaContract.BookEntry.buildBookUri(Long.parseLong(eanStr)),
+                bookValues,
+                null,
+                null
+        );
     }
 }

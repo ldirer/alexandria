@@ -2,7 +2,6 @@ package it.jaschke.alexandria;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -11,6 +10,7 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -177,10 +177,24 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         rootView.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Add da book!!
-                String eanStr = ean.getText().toString();
-                addBookToList(eanStr);
+                final String eanStr = ean.getText().toString();
+                Utility.addBookToList(getContext(), eanStr);
                 ean.setText("");
+
+                Snackbar.make(rootView, "Book added to list!", Snackbar.LENGTH_LONG)
+                        .setAction("Undo", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+//                        TODO: QUESTION - Is it better practice to hold on the action and actually perform it (call database to add book to list) until the snackbar has disappeared?
+// TODO: Or is it better to do it with the approach I'm using, that is perform the action and "reverse" it if the user presses 'Undo'? That is heavier in terms of resources (more calls to database, etc.).
+                                Utility.removeBookFromList(getContext(), eanStr);
+                                // TODO: delete book from database altogether.
+//                                deleteBook()
+                                Snackbar.make(rootView, "Book removed from list.", Snackbar.LENGTH_SHORT)
+                                        .show();
+                            }
+                        })
+                        .show();
             }
         });
 
@@ -210,22 +224,6 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         }
 
         return rootView;
-    }
-
-    /**
-     * Add a book that is already in the database to the user's list by changing a boolean field.
-     *
-     * @param eanStr: the ISBN-13 number of the book.
-     */
-    private void addBookToList(String eanStr) {
-        ContentValues bookValues = new ContentValues();
-        bookValues.put(AlexandriaContract.BookEntry.COLUMN_BOOK_IN_LIST, 1);
-        getContext().getContentResolver().update(
-                AlexandriaContract.BookEntry.buildBookUri(Long.parseLong(eanStr)),
-                bookValues,
-                null,
-                null
-        );
     }
 
     private void restartLoader() {
