@@ -18,6 +18,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +37,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     private static final String TAG = "INTENT_TO_SCAN_ACTIVITY";
     private static final String LOG_TAG = AddBook.class.getSimpleName();
     private EditText ean;
-    private final int LOADER_ID = 1;
     private View rootView;
+
+    private final int LOADER_ID = 1;
     private final String EAN_CONTENT = "eanContent";
     private static final String SCAN_FORMAT = "scanFormat";
     private static final String SCAN_CONTENTS = "scanContents";
@@ -132,6 +134,12 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_add_book, container, false);
+
+        //TODO: remove once it's proven to be too complicated.
+/*        View includedLayout = rootView.findViewById(R.id.book_scan_or_enter_isbn);
+        TextView hintView = (TextView) includedLayout.findViewById(R.id.hint_ean);
+        hintView.setTextSize(TypedValue.COMPLEX_UNIT_PX, Utility.findRightTextSize(this, hintView));*/
+
         ean = (EditText) rootView.findViewById(R.id.ean);
 
         ean.addTextChangedListener(new TextWatcher() {
