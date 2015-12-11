@@ -149,6 +149,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             public void afterTextChanged(Editable s) {
                 clearFields();
                 validateInputAndLaunchService();
+                if (ean.length() > 0) {
+                    rootView.findViewById(R.id.clear_button).setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -180,6 +183,15 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                 ean.setText("");
             }
         });
+
+        rootView.findViewById(R.id.clear_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ean.setText("");
+            }
+        });
+
+
 // TODO: move that to the fragment with the list of books.
 //        rootView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
 //            @Override
