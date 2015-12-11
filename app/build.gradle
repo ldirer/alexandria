@@ -26,7 +26,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug{
-            testCoverageEnabled = true
+//            This causes the Android Studio debugger to not find local variables when they are arguments of a method(!!)
+//            testCoverageEnabled = true
+            testCoverageEnabled = false
         }
 
     }
