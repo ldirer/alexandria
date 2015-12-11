@@ -51,7 +51,7 @@ public class Utility {
      * @param context: a context to get the content resolver from.
      * @param eanStr: the ISBN-13 number of the book.
      */
-    static void addBookToList(Context context, String eanStr) {
+    public static void addBookToList(Context context, String eanStr) {
         ContentValues bookValues = new ContentValues();
         bookValues.put(AlexandriaContract.BookEntry.COLUMN_BOOK_IN_LIST, 1);
         context.getContentResolver().update(
@@ -67,7 +67,7 @@ public class Utility {
      * @param context: a context to get the content resolver from.
      * @param eanStr: the ISBN-13 number of the book.
      */
-    static void removeBookFromList(Context context, String eanStr) {
+    public static void removeBookFromList(Context context, String eanStr) {
         ContentValues bookValues = new ContentValues();
         bookValues.put(AlexandriaContract.BookEntry.COLUMN_BOOK_IN_LIST, 0);
         context.getContentResolver().update(

@@ -9,12 +9,15 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -69,6 +72,26 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
         bookList.setAdapter(bookListAdapter);
         bookList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        ItemTouchHelper.SimpleCallback onItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT, ItemTouchHelper.LEFT) {
+            private String LOG_TAG = this.getClass().getSimpleName();
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                Log.d(LOG_TAG, "in onMove");
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                Log.d(LOG_TAG, "in onSwiped");
+                Toast.makeText(getActivity(), "showing some delete button", Toast.LENGTH_SHORT).show();
+                BookListAdapter.BookListViewHolder bookListViewHolder = (BookListAdapter.BookListViewHolder) viewHolder;
+                bookListViewHolder.bookRemoveButton.setVisibility(View.VISIBLE);
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(onItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(bookList);
 
         return rootView;
     }

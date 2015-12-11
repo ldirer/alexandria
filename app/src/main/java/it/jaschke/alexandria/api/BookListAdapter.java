@@ -5,15 +5,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.concurrent.RecursiveAction;
 
 import it.jaschke.alexandria.R;
+import it.jaschke.alexandria.Utility;
 import it.jaschke.alexandria.data.AlexandriaContract;
 import it.jaschke.alexandria.services.DownloadImage;
 
@@ -44,13 +47,22 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookLi
         public final ImageView bookCover;
         public final TextView bookTitle;
         public final TextView bookSubTitle;
+        public final Button bookRemoveButton;
 
         public BookListViewHolder(View view) {
             super(view);
             bookCover = (ImageView) view.findViewById(R.id.fullBookCover);
             bookTitle = (TextView) view.findViewById(R.id.listBookTitle);
             bookSubTitle = (TextView) view.findViewById(R.id.listBookSubTitle);
+            bookRemoveButton = (Button) view.findViewById(R.id.listBookRemove);
             view.setOnClickListener(this);
+
+            bookRemoveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Utility.removeBookFromList(mContext, mCursor.getString(mCursor.getColumnIndex(AlexandriaContract.BookEntry._ID)));
+                }
+            });
         }
 
         @Override
@@ -60,6 +72,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookLi
             }
         }
     }
+
 
     @Override
     public BookListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
