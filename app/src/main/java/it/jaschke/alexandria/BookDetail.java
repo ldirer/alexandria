@@ -127,12 +127,6 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
             // We check that we've been through onCreateOptionsMenu already.
             shareActionProvider.setShareIntent(shareIntent);
         }
-
-        // TODO: WAT? check what backbutton is. Best practice is DO NOT TOUCH DA ACTUAL BACK BUTTON.
-        if(rootView.findViewById(R.id.right_container)!=null){
-            rootView.findViewById(R.id.backButton).setVisibility(View.INVISIBLE);
-        }
-
     }
 
     @Override
