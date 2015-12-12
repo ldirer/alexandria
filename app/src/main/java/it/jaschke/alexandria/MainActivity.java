@@ -11,13 +11,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import it.jaschke.alexandria.api.Callback;
 
@@ -33,7 +30,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence title;
-    public static boolean IS_TABLET = false;
     private BroadcastReceiver messageReciever;
 
     public static final String MESSAGE_EVENT = "MESSAGE_EVENT";
@@ -42,12 +38,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        IS_TABLET = isTablet();
-        if(IS_TABLET){
-            setContentView(R.layout.activity_main_tablet);
-        }else {
-            setContentView(R.layout.activity_main);
-        }
+        setContentView(R.layout.activity_main);
 
         android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -64,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         // Set up the drawer.
         navigationDrawerFragment.setUp(R.id.navigation_drawer,
-                    (DrawerLayout) findViewById(R.id.drawer_layout));
+                (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
     @Override
@@ -167,11 +158,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         }
     }
 
-    private boolean isTablet() {
-        return (getApplicationContext().getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK)
-                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
-    }
 
     //TODO: WAT? This probably should not exist!
     @Override
