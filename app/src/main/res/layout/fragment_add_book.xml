@@ -2,11 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" tools:context="it.jaschke.alexandria.AddBook">
 
-    <RelativeLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center_horizontal|top"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         >
 
         <include layout="@layout/book_scan_or_enter_isbn"
@@ -25,74 +24,24 @@
             android:textStyle="bold"
             android:layout_marginTop="25dp"
             android:paddingRight="20dp"
-            android:layout_below="@id/book_scan_or_enter_isbn"
-            android:layout_alignLeft="@id/book_scan_or_enter_isbn"
-            android:layout_alignStart="@id/book_scan_or_enter_isbn"
+            android:paddingEnd="20dp"
+            android:paddingLeft="20dp"
+            android:paddingStart="20dp"
             android:visibility="gone"
             />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <include layout="@layout/book_detail_layout"
+            android:id="@+id/book_detail_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/bookTitle"
-            android:textSize="@dimen/head_line"
-            android:textIsSelectable="true"
-            android:textStyle="bold"
-            android:layout_marginTop="25dp"
-            android:paddingRight="20dp"
-            android:layout_below="@id/book_scan_or_enter_isbn"
-            android:layout_alignLeft="@id/book_scan_or_enter_isbn"
-            android:layout_alignStart="@id/book_scan_or_enter_isbn"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/bookSubTitle"
-            android:layout_marginTop="10dp"
-            android:layout_below="@+id/bookTitle"
-            android:maxLines="3"
-            android:ellipsize="end"
-            android:layout_alignLeft="@id/book_scan_or_enter_isbn"
             />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/authors"
-            android:gravity="end"
-            android:textSize="@dimen/small_fontsize"
-            android:layout_marginTop="20dp"
-            android:layout_below="@+id/bookSubTitle"
-            android:layout_alignRight="@id/book_scan_or_enter_isbn"
-            android:layout_alignEnd="@id/book_scan_or_enter_isbn"
-            />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/bookCover"
-            android:contentDescription="@string/book_cover"
-            android:layout_alignTop="@+id/authors"
-            android:layout_alignLeft="@id/book_scan_or_enter_isbn"
-            android:layout_alignStart="@id/book_scan_or_enter_isbn"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/categories"
-            android:textSize="@dimen/small_fontsize"
-            android:layout_below="@+id/bookCover"
-            android:layout_marginTop="20dp"
-            android:layout_alignLeft="@id/book_scan_or_enter_isbn"
-            android:layout_alignStart="@id/book_scan_or_enter_isbn"/>
-
+        <!--Buttons to clear the text field and add a book -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="50dip"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            >
 
             <Button
                 android:layout_width="wrap_content"
@@ -122,5 +71,5 @@
 
         </LinearLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 </FrameLayout>
