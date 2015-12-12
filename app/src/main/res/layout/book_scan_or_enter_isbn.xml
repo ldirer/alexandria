@@ -46,8 +46,6 @@
             android:maxLength="@integer/ean_size"
             android:maxLines="1"
             android:minEms="@integer/ean_width"
-            android:paddingRight="20dp"
-            android:paddingEnd="20dp"
             android:saveEnabled="true" />
 
     </LinearLayout>

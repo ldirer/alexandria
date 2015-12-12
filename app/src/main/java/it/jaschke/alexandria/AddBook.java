@@ -359,7 +359,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             emptyView.setVisibility(View.VISIBLE);
             emptyView.setText(errorMessage);
         } else {
-            emptyView.setVisibility(View.INVISIBLE);
+            emptyView.setVisibility(View.GONE);
         }
     }
 
