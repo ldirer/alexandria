@@ -40,4 +40,5 @@
     <string name="fetch_book_status_no_book_found">We did not find any book matching this ISBN number. Please check again that you entered a correct ISBN-13 number.</string>
     <string name="clear_button">Clear</string>
     <string name="hint_edit_text_isbn">Or enter an ISBN-13 or ISBN-10 number yourself:</string>
+    <string name="title_activity_detail">Book details</string>
 </resources>
