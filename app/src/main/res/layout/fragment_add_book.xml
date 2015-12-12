@@ -1,75 +1,67 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="it.jaschke.alexandria.AddBook">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="it.jaschke.alexandria.AddBook">
 
-    <LinearLayout
+    <include
+        android:id="@+id/book_scan_or_enter_isbn"
+        layout="@layout/book_scan_or_enter_isbn"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/small_margin" />
 
-        <include layout="@layout/book_scan_or_enter_isbn"
-            android:id="@+id/book_scan_or_enter_isbn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/small_margin"
-            />
+    <TextView
+        android:id="@+id/no_book_found"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:paddingEnd="20dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingStart="20dp"
+        android:textIsSelectable="true"
+        android:textSize="@dimen/head_line"
+        android:textStyle="bold"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/no_book_found"
+    <include
+        android:id="@+id/book_detail_layout"
+        layout="@layout/book_detail_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!--Buttons to clear the text field and add a book -->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="50dip"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/clear_button"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/head_line"
-            android:textIsSelectable="true"
-            android:textStyle="bold"
-            android:layout_marginTop="25dp"
-            android:paddingRight="20dp"
-            android:paddingEnd="20dp"
-            android:paddingLeft="20dp"
-            android:paddingStart="20dp"
-            android:visibility="gone"
-            />
+            android:layout_height="fill_parent"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/ic_action_discard"
+            android:drawableStart="@drawable/ic_action_discard"
+            android:text="@string/clear_button"
+            android:visibility="invisible" />
 
-        <include layout="@layout/book_detail_layout"
-            android:id="@+id/book_detail_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
-
-        <!--Buttons to clear the text field and add a book -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="50dip"
-            >
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:text="@string/clear_button"
-                android:visibility="invisible"
-                android:layout_weight="1"
-                android:id="@+id/clear_button"
-                android:drawableStart="@drawable/ic_action_discard"
-                android:drawableLeft="@drawable/ic_action_discard"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_gravity="bottom"
-                />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:text="@string/save_button"
-                android:visibility="invisible"
-                android:layout_weight="1"
-                android:id="@+id/save_button"
-                android:drawableEnd="@drawable/ic_action_accept"
-                android:drawableRight="@drawable/ic_action_accept"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_gravity="bottom"
-                />
-
-        </LinearLayout>
+        <Button
+            android:id="@+id/save_button"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/ic_action_accept"
+            android:drawableRight="@drawable/ic_action_accept"
+            android:text="@string/save_button"
+            android:visibility="invisible" />
 
     </LinearLayout>
-</FrameLayout>
+
+</LinearLayout>

@@ -3,8 +3,7 @@
     android:id="@+id/book_scan_or_enter_isbn"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentTop="true"
-    android:layout_centerHorizontal="true"
+    android:gravity="center_horizontal"
     android:orientation="horizontal">
 
     <Button

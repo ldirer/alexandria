@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import it.jaschke.alexandria.api.Callback;
+import it.jaschke.alexandria.data.AlexandriaContract;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks, Callback {
@@ -43,8 +44,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
+        // TODO: What's the use of this messageReceiver?
         messageReciever = new MessageReciever();
         IntentFilter filter = new IntentFilter(MESSAGE_EVENT);
         LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever,filter);
@@ -138,14 +138,20 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         BookDetail fragment = new BookDetail();
         fragment.setArguments(args);
 
-        int id = R.id.container;
         if(findViewById(R.id.right_container) != null){
-            id = R.id.right_container;
+            // We have a two-pane layout.
+            int id = R.id.right_container;
+            getSupportFragmentManager().beginTransaction()
+                    .replace(id, fragment)
+//                .addToBackStack("Book Detail")
+                    .commit();
         }
-        getSupportFragmentManager().beginTransaction()
-                .replace(id, fragment)
-                .addToBackStack("Book Detail")
-                .commit();
+        else{
+            // We want to launch a different activity.
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .putExtra(BookDetail.EAN_KEY, ean);
+            startActivity(intent);
+        }
 
     }
 
@@ -157,16 +163,5 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             }
         }
     }
-
-
-    //TODO: WAT? This probably should not exist!
-    @Override
-    public void onBackPressed() {
-        if(getSupportFragmentManager().getBackStackEntryCount()<2){
-            finish();
-        }
-        super.onBackPressed();
-    }
-
 
 }
