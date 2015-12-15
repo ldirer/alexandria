@@ -109,6 +109,8 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
         Log.d(LOG_TAG, "in onLoadFinished");
         // TODO: this code is a duplicate for the code in AddBook! Find out how to factor it out cleanly.
+        // I would do this with a separate DetailViewHolder class that both AddBook and BookDetail would instantiate in onCreateView.
+        // Then they would call a populate method with a cursor as argument to fill in the views.
         if (!data.moveToFirst()) {
             return;
         }

@@ -224,20 +224,6 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             }
         });
 
-
-
-// TODO: move that to the fragment with the list of books.
-//        rootView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent bookIntent = new Intent(getActivity(), BookService.class);
-//                bookIntent.putExtra(BookService.EAN, ean.getText().toString());
-//                bookIntent.setAction(BookService.DELETE_BOOK);
-//                getActivity().startService(bookIntent);
-//                ean.setText("");
-//            }
-//        });
-
         if (savedInstanceState != null) {
             eanEditText.setText(savedInstanceState.getString(EAN_CONTENT));
             eanEditText.setHint("");
@@ -280,6 +266,8 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         }
         // Clear a possible pre-existing view.
         updateEmptyView();
+
+        // We probably should be using a ViewHolder pattern.
         String bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.COLUMN_TITLE));
         ((TextView) rootView.findViewById(R.id.bookTitle)).setText(bookTitle);
 

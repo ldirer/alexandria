@@ -73,7 +73,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookLi
     @Override
     public BookListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.book_list_item, parent, false);
-        // TODO: copied from sunshine. What is focusable anyway??
         view.setFocusable(true);
         return new BookListViewHolder(view);
     }
