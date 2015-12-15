@@ -2,11 +2,16 @@ package it.jaschke.alexandria;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 public class DetailActivity extends AppCompatActivity {
 
+    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
+    private String DETAIL_FRAGMENT_NAME = "book_detail_fragment";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(LOG_TAG, "in onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detail_activity);
 
@@ -19,7 +24,10 @@ public class DetailActivity extends AppCompatActivity {
             fragment.setArguments(extras);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.book_detail_container, fragment)
+                    .addToBackStack(DETAIL_FRAGMENT_NAME)
                     .commit();
+            getSupportFragmentManager().executePendingTransactions();
+            Log.d(LOG_TAG, "Activity has " + getSupportFragmentManager().getBackStackEntryCount() + " fragments");
         }
     }
 }

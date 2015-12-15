@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             int id = R.id.right_container;
             getSupportFragmentManager().beginTransaction()
                     .replace(id, fragment)
-//                .addToBackStack("Book Detail")
+                    .addToBackStack("Book Detail")
                     .commit();
         }
         else{

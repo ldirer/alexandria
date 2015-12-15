@@ -2,6 +2,7 @@ package it.jaschke.alexandria;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -31,7 +32,7 @@ public class Utility {
      */
     static public boolean isNetworkAvailable(Context c) {
         ConnectivityManager cm =
-                (ConnectivityManager)c.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null &&
@@ -39,13 +40,14 @@ public class Utility {
     }
 
     /**
-     *
      * @param c Context used to get the Shared Preferences.
      * @return
      */
 
     @SuppressWarnings("ResourceType")
-    static public @BookService.FetchBookStatus int getFetchBookStatus(Context c) {
+    static public
+    @BookService.FetchBookStatus
+    int getFetchBookStatus(Context c) {
         Log.d(LOG_TAG, "in getFetchBookStatus");
         SharedPreferences bookStatusPref = PreferenceManager.getDefaultSharedPreferences(c);
         return bookStatusPref.getInt(c.getString(R.string.pref_fetch_book_status_key),
@@ -54,8 +56,9 @@ public class Utility {
 
     /**
      * Add a book that is already in the database to the user's list by changing a boolean field.
+     *
      * @param context: a context to get the content resolver from.
-     * @param eanStr: the ISBN-13 number of the book.
+     * @param eanStr:  the ISBN-13 number of the book.
      */
     public static void addBookToList(Context context, String eanStr) {
         ContentValues bookValues = new ContentValues();
@@ -70,8 +73,9 @@ public class Utility {
 
     /**
      * Remove a book that is already in the database from the user's list by changing a boolean field.
+     *
      * @param context: a context to get the content resolver from.
-     * @param eanStr: the ISBN-13 number of the book.
+     * @param eanStr:  the ISBN-13 number of the book.
      */
     public static void removeBookFromList(Context context, String eanStr) {
         ContentValues bookValues = new ContentValues();
@@ -85,4 +89,10 @@ public class Utility {
     }
 
 
+    public static void deleteBook(Context context, String eanStr) {
+        Intent bookIntent = new Intent(context, BookService.class);
+        bookIntent.putExtra(BookService.EAN, eanStr);
+        bookIntent.setAction(BookService.DELETE_BOOK);
+        context.startService(bookIntent);
+    }
 }

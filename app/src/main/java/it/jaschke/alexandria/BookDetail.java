@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.view.MenuItemCompat;
@@ -54,15 +55,28 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
         }
 
         rootView = inflater.inflate(R.layout.fragment_full_book, container, false);
-//                false).findViewById(R.id.book_detail_layout);
         rootView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent bookIntent = new Intent(getActivity(), BookService.class);
-                bookIntent.putExtra(BookService.EAN, ean);
-                bookIntent.setAction(BookService.DELETE_BOOK);
-                getActivity().startService(bookIntent);
-                getActivity().getSupportFragmentManager().popBackStack();
+                Log.d(LOG_TAG, "in onClick delete button");
+                Utility.deleteBook(getActivity(), ean);
+
+                /** Now that the book is deleted we want to leave the detail view.
+                 We have one of two different cases:
+
+                 * This fragment is handled by a 'specialist', mono-fragment Detail Activity.
+                 * We have a detail fragment inside the main activity.
+                */
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                Log.d(LOG_TAG, "Activity has " + fragmentManager.getBackStackEntryCount() + " fragments");
+                if(fragmentManager.getBackStackEntryCount() <=  1) {
+                    // We have a single-fragment activity
+                    getActivity().finish();
+                }
+                else {
+                    // We have several fragments in the activity, so we don't want to terminate it.
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }
             }
         });
         return rootView;

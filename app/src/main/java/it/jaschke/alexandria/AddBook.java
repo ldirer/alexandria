@@ -207,11 +207,8 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                         .setAction("Undo", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-//                        TODO: QUESTION - Is it better practice to hold on the action and actually perform it (call database to add book to list) until the snackbar has disappeared?
-// TODO: Or is it better to do it with the approach I'm using, that is perform the action and "reverse" it if the user presses 'Undo'? That is heavier in terms of resources (more calls to database, etc.).
                                 Utility.removeBookFromList(getContext(), eanStr);
-                                // TODO: delete book from database altogether.
-//                                deleteBook()
+                                Utility.deleteBook(getActivity(), eanStr);
                                 Snackbar.make(rootView, "Book removed from list.", Snackbar.LENGTH_SHORT)
                                         .show();
                             }
@@ -324,9 +321,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        activity.setTitle(R.string.scan);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getActivity().setTitle(R.string.scan);
     }
 
     @Override
