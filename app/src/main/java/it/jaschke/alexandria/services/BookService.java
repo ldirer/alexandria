@@ -196,10 +196,6 @@ public class BookService extends IntentService {
                 bookArray = bookJson.getJSONArray(ITEMS);
             }else{
                 Log.d(LOG_TAG, "No book found");
-                // TODO: he's using a toast here, mb we could use our empty/error view instead.
-                Intent messageIntent = new Intent(MainActivity.MESSAGE_EVENT);
-                messageIntent.putExtra(MainActivity.MESSAGE_KEY, getResources().getString(R.string.not_found));
-                LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
                 setFetchBookStatus(this, FETCH_BOOK_STATUS_NO_BOOK_FOUND);
                 return;
             }
