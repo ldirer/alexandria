@@ -184,12 +184,9 @@ public class BookService extends IntentService {
         final String CATEGORIES = "categories";
         final String IMG_URL_PATH = "imageLinks";
         final String IMG_URL = "thumbnail";
-        // TODO: add key for http response code.
 
         try {
             JSONObject bookJson = new JSONObject(bookJsonString);
-            // TODO We look for http errors first.
-//            bookJson.has(HTTP_CODE) {}
 
             JSONArray bookArray;
             if(bookJson.has(ITEMS)){
