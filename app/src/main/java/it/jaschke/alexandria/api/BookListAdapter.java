@@ -4,6 +4,7 @@ package it.jaschke.alexandria.api;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import it.jaschke.alexandria.services.DownloadImage;
  */
 public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookListViewHolder> {
 
+    private static final String LOG_TAG = BookListAdapter.class.getSimpleName();
     private Cursor mCursor;
     // We want a context to get resources (string formatting, etc).
     private Context mContext;
@@ -28,6 +30,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookLi
 
 
     public BookListAdapter(Context context, Cursor cursor, Callback onItemSelectedCallback) {
+        Log.d(LOG_TAG, "in BookListAdapter constructor");
         mContext = context;
         mCursor = cursor;
         mOnItemSelectedCallback = onItemSelectedCallback;

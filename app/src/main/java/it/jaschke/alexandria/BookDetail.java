@@ -75,7 +75,11 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
                 }
                 else {
                     // We have several fragments in the activity, so we don't want to terminate it.
-                    getActivity().getSupportFragmentManager().popBackStack();
+                    fragmentManager.popBackStack();
+                    // We want to update the book list displayed in the ListOfBooks fragment.
+                    ListOfBooks listBookFragment = (ListOfBooks) fragmentManager.findFragmentByTag(MainActivity.LIST_BOOK_FRAGMENT_TAG);
+                    // Note: just bluffing here, notifyDataSetChanged did not work so I restart the loader in getAdapter. Baaad.
+                    listBookFragment.getAdapter().notifyDataSetChanged();
                 }
             }
         });

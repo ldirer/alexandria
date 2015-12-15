@@ -90,9 +90,13 @@ public class Utility {
 
 
     public static void deleteBook(Context context, String eanStr) {
-        Intent bookIntent = new Intent(context, BookService.class);
-        bookIntent.putExtra(BookService.EAN, eanStr);
-        bookIntent.setAction(BookService.DELETE_BOOK);
-        context.startService(bookIntent);
+        Log.d(LOG_TAG, "in deleteBook");
+        context.getContentResolver().delete(AlexandriaContract.BookEntry.buildBookUri(Long.parseLong(eanStr)), null, null);
+
+        // This previous code made it complicated to notify the adapter of the changes.
+//        Intent bookIntent = new Intent(context, BookService.class);
+//        bookIntent.putExtra(BookService.EAN, eanStr);
+//        bookIntent.setAction(BookService.DELETE_BOOK);
+//        context.startService(bookIntent);
     }
 }

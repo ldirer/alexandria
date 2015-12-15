@@ -29,6 +29,7 @@ import it.jaschke.alexandria.data.AlexandriaContract;
 
 public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final String LOG_TAG = ListOfBooks.class.getSimpleName();
     private BookListAdapter bookListAdapter;
     private RecyclerView bookList;
     private int position = ListView.INVALID_POSITION;
@@ -97,6 +98,7 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
     }
 
     private void restartLoader(){
+        Log.d(LOG_TAG, "in restartLoader");
         getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 
@@ -107,7 +109,7 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
         selectionArgs.add("1");
 
         String searchStringSelection = AlexandriaContract.BookEntry.COLUMN_TITLE +" LIKE ? OR " + AlexandriaContract.BookEntry.COLUMN_SUBTITLE + " LIKE ? ";
-        String searchString =searchText.getText().toString();
+        String searchString = searchText.getText().toString();
 
         if(searchString.length()>0){
             searchString = "%"+searchString+"%";
@@ -121,13 +123,14 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
                 AlexandriaContract.BookEntry.CONTENT_URI,
                 null,
                 selectionStr,
-                (String[]) selectionArgs.toArray(),
+                selectionArgs.toArray(new String[]{}),
                 null
         );
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.d(LOG_TAG, "in onLoadFinished");
         bookListAdapter.swapCursor(data);
         if (position != ListView.INVALID_POSITION) {
             bookList.smoothScrollToPosition(position);
@@ -143,5 +146,19 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         activity.setTitle(R.string.books);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Make sure we see a new list if we removed an item.
+        restartLoader();
+    }
+
+    public BookListAdapter getAdapter() {
+        Log.d(LOG_TAG, "in getAdapter");
+        // TODO: I could not get the recyclerview to refresh without calling restartLoader here. Which is kind of cheating ;).
+        restartLoader();
+        return bookListAdapter;
     }
 }

@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      */
     private NavigationDrawerFragment navigationDrawerFragment;
     private AddBook mAddBookFragment;
+    public static final String LIST_BOOK_FRAGMENT_TAG = "LB_FRAGMENT_TAG";
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -59,11 +60,20 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment nextFragment;
-
+        String tag = "";
         switch (position){
             default:
             case 0:
-                nextFragment = new ListOfBooks();
+                tag = LIST_BOOK_FRAGMENT_TAG;
+                ListOfBooks existingFragment = (ListOfBooks) fragmentManager.findFragmentByTag(tag);
+                if (null != existingFragment) {
+                    // Use this existing fragment and don't create a new one!
+                    nextFragment = existingFragment;
+                }
+                else {
+                    nextFragment = new ListOfBooks();
+                }
+
                 break;
             case 1:
                 mAddBookFragment = new AddBook();
@@ -75,8 +85,9 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         }
 
+        Log.d(LOG_TAG, "Adding a fragment - tag: " + tag);
         fragmentManager.beginTransaction()
-                .replace(R.id.container, nextFragment)
+                .replace(R.id.container, nextFragment, tag)
                 .addToBackStack((String) title)
                 .commit();
     }
