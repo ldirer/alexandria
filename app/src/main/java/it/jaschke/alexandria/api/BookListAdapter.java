@@ -81,8 +81,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookLi
     @Override
     public void onBindViewHolder(BookListViewHolder holder, int position) {
         mCursor.moveToPosition(position);
-        // TODO - QUESTION: Using getColumnIndex vs the pattern we used in Sunshine (Declaring integer constants ourselves)?
-        // TODO - QUESTION: Is this heavier? This seems to avoid some boilerplate, error-prone code.
         String imgUrl = mCursor.getString(mCursor.getColumnIndex(AlexandriaContract.BookEntry.COLUMN_IMAGE_URL));
         new DownloadImage(holder.bookCover).execute(imgUrl);
 

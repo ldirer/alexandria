@@ -144,11 +144,6 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
         rootView = inflater.inflate(R.layout.fragment_add_book, container, false);
 
-        //TODO: remove once it's proven to be too complicated.
-/*        View includedLayout = rootView.findViewById(R.id.book_scan_or_enter_isbn);
-        TextView hintView = (TextView) includedLayout.findViewById(R.id.hint_ean);
-        hintView.setTextSize(TypedValue.COMPLEX_UNIT_PX, Utility.findRightTextSize(this, hintView));*/
-
         eanEditText = (EditText) rootView.findViewById(R.id.ean);
 
         eanEditText.addTextChangedListener(new TextWatcher() {
