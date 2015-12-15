@@ -4,7 +4,7 @@
     <!ENTITY appname "Alexandria">
     ]>
 <resources xmlns:xliff="http://schemas.android.com/tools">
-    <string name="app_name">&appname;</string>
+    <string name="app_name" translatable="false">&appname;</string>
 
     <!-- Menu Items -->
     <string name="books">List of Books</string>
