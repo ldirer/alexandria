@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,20 +11,25 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 import it.jaschke.alexandria.api.Callback;
-import it.jaschke.alexandria.data.AlexandriaContract;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks, Callback {
 
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment navigationDrawerFragment;
+    private AddBook mAddBookFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -70,7 +74,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 nextFragment = new ListOfBooks();
                 break;
             case 1:
-                nextFragment = new AddBook();
+                mAddBookFragment = new AddBook();
+                nextFragment = mAddBookFragment;
                 break;
             case 2:
                 nextFragment = new About();
@@ -162,6 +167,17 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 Toast.makeText(MainActivity.this, intent.getStringExtra(MESSAGE_KEY), Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(LOG_TAG, "in onActivityResult");
+        super.onActivityResult(requestCode, resultCode, data);
+        IntentResult intentScanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        String eanNumber = intentScanResult.getContents();
+        mAddBookFragment.eanEditText.setText(eanNumber);
     }
 
 }
