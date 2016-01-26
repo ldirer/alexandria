@@ -24,10 +24,13 @@ public class DetailActivity extends AppCompatActivity {
             fragment.setArguments(extras);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.book_detail_container, fragment)
-                    .addToBackStack(DETAIL_FRAGMENT_NAME)
+                 // If we had it to the backstack, the back button takes us to an empty activity and we need to press twice to go back to the launcher activity.
+                 //   .addToBackStack(DETAIL_FRAGMENT_NAME)
                     .commit();
             getSupportFragmentManager().executePendingTransactions();
             Log.d(LOG_TAG, "Activity has " + getSupportFragmentManager().getBackStackEntryCount() + " fragments");
         }
     }
+
+
 }
