@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 ListOfBooks existingFragment = (ListOfBooks) fragmentManager.findFragmentByTag(tag);
                 if (null != existingFragment) {
                     // Use this existing fragment and don't create a new one!
+                    Log.d(LOG_TAG, "Reusing existing fragment");
                     nextFragment = existingFragment;
                 }
                 else {
@@ -95,13 +96,15 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     public void setTitle(int titleId) {
         title = getString(titleId);
+        Log.d(LOG_TAG, String.format("in setTitle, title=%s, titleid=%d", title, titleId));
     }
 
     public void restoreActionBar() {
+        Log.d(LOG_TAG, "in restoreActionBar");
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(title);
+        actionBar.setDisplayShowTitleEnabled(true);
     }
 
 
