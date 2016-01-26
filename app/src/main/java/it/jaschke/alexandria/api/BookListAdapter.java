@@ -71,7 +71,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookLi
             bookTitle = (TextView) view.findViewById(R.id.listBookTitle);
             bookSubTitle = (TextView) view.findViewById(R.id.listBookSubTitle);
             bookRemoveButton = (Button) view.findViewById(R.id.listBookRemove);
-            bookRemoveButton.setClickable(false);
             bookView = (LinearLayout) view.findViewById(R.id.bookView);
 
             mSwipeDetector = new SwipeDetector(this);
@@ -90,6 +89,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookLi
                     }
                 }
             });
+            // This needs to be done AFTER setOnClickListener since the method also sets the button clickable.
+            bookRemoveButton.setClickable(false);
 
         }
 

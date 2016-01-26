@@ -27,7 +27,7 @@
         android:visibility="gone" />
 
     <include
-        android:id="@+id/book_detail_layout"
+        android:id="@+id/book_detail_linear_layout"
         layout="@layout/book_detail_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
