@@ -85,7 +85,9 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookLi
                 @Override
                 public void onClick(View v) {
                     Log.d(LOG_TAG, "in remove onClick");
-                    Utility.removeBookFromList(mContext, mCursor.getString(mCursor.getColumnIndex(AlexandriaContract.BookEntry._ID)));
+                    if(mCursor != null && mCursor.moveToPosition(getAdapterPosition())) {
+                        Utility.removeBookFromList(mContext, mCursor.getString(mCursor.getColumnIndex(AlexandriaContract.BookEntry._ID)));
+                    }
                 }
             });
 
@@ -190,7 +192,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookLi
 
 
     /**
-     * Still very fragile. Setting the button as clickable when not hidden for instance:
+     * Still very fragile. Setting the button as clickable when not hidden for instance (done by the interface methods):
      * that makes the button deal with all click events before the book view.
      * If the button has a `match_parent` width, that's ALL the clicks...
      *
