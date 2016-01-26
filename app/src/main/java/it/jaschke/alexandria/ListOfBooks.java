@@ -70,29 +70,34 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
         );
 
         bookList = (RecyclerView) rootView.findViewById(R.id.listOfBooks);
+        // This is a custom method because we need a reference to recyclerview in the adapter.
+        bookListAdapter.setRecyclerView(bookList);
         bookList.setAdapter(bookListAdapter);
         bookList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        ItemTouchHelper.SimpleCallback onItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT, ItemTouchHelper.LEFT) {
-            private String LOG_TAG = this.getClass().getSimpleName();
-
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                Log.d(LOG_TAG, "in onMove");
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                Log.d(LOG_TAG, "in onSwiped");
-                Toast.makeText(getActivity(), "showing some delete button", Toast.LENGTH_SHORT).show();
-                BookListAdapter.BookListViewHolder bookListViewHolder = (BookListAdapter.BookListViewHolder) viewHolder;
-                bookListViewHolder.bookRemoveButton.setVisibility(View.VISIBLE);
-            }
-        };
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(onItemTouchCallback);
-        itemTouchHelper.attachToRecyclerView(bookList);
+//        ItemTouchHelper.SimpleCallback onItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT, ItemTouchHelper.LEFT) {
+//            private String LOG_TAG = this.getClass().getSimpleName();
+//
+//            @Override
+//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+//                Log.d(LOG_TAG, "in onMove");
+//                return false;
+//            }
+//
+//            @Override
+//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+//                // TODO: implement onSwiped-show-delete
+//                Log.d(LOG_TAG, "in onSwiped");
+//                Toast.makeText(getActivity(), "showing some delete button", Toast.LENGTH_SHORT).show();
+//                // TODO: seems dangerous (fragile) to use bookList here? -> I'm using null now. The RecyclerView argument is not used anyway!
+//                clearView(null, viewHolder);
+////                BookListAdapter.BookListViewHolder bookListViewHolder = (BookListAdapter.BookListViewHolder) viewHolder;
+////                bookListViewHolder.bookRemoveButton.setVisibility(View.VISIBLE);
+//            }
+//        };
+//
+//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(onItemTouchCallback);
+//        itemTouchHelper.attachToRecyclerView(bookList);
 
         return rootView;
     }

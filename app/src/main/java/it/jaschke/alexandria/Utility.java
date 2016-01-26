@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.text.TextPaint;
 import android.util.DisplayMetrics;
@@ -13,6 +14,7 @@ import android.util.Log;
 
 
 import android.support.v4.app.Fragment;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import it.jaschke.alexandria.R;
@@ -98,5 +100,35 @@ public class Utility {
 //        bookIntent.putExtra(BookService.EAN, eanStr);
 //        bookIntent.setAction(BookService.DELETE_BOOK);
 //        context.startService(bookIntent);
+    }
+
+    /**
+     * Utility to get the marginEnd/marginRight from LayoutParams according to API level.
+     */
+    public static int getMarginEnd(RelativeLayout.LayoutParams params) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            // TODO: MARGIN END DOES NOT WORK AS I'D EXPECT IT TOO.
+            return params.rightMargin;
+//                return params.getMarginEnd();
+        }
+        else {
+            return params.rightMargin;
+        }
+    }
+
+    /**
+     * Utility to set the marginEnd/marginRight of LayoutParams according to API level.
+     * Changes params inplace.
+     */
+    public static void setMarginEnd(RelativeLayout.LayoutParams params, int end) {
+//            Log.d(LOG_TAG, String.format("API: %d", Build.VERSION.SDK_INT));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            // TODO: MARGIN END DOES NOT WORK AS I'D EXPECT IT TOO.
+//                params.setMarginEnd(end);
+            params.rightMargin = end;
+        }
+        else {
+            params.rightMargin = end;
+        }
     }
 }
