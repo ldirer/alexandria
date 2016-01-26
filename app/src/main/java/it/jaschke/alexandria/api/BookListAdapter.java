@@ -210,7 +210,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookLi
         private RecyclerView.ViewHolder mViewHolder;
         private String LOG_TAG = SwipeDetector.class.getSimpleName();
         private boolean disallowInterceptTouchEvent;
-        private Boolean mButtonHidden;
+        private boolean mButtonHidden = true;
 
         public SwipeDetector(RecyclerView.ViewHolder viewHolder) {
             mViewHolder = viewHolder;
@@ -231,8 +231,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookLi
                 mInitialTouchX = event.getX();
                 mInitialTouchY = event.getY();
                 // If we put the following line here, we can't scroll no more!
-//                recyclerView.requestDisallowInterceptTouchEvent(true);
-                return true; // Allow other events like click to be processed. TODO: that's from the tutorial, I thought that was the exact opposite!
+                // recyclerView.requestDisallowInterceptTouchEvent(true);
+                return true;
             }
 
             dX = event.getX() - mInitialTouchX;
