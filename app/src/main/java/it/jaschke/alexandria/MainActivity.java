@@ -178,22 +178,22 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_DOWN"));
-            case MotionEvent.ACTION_UP:
-                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_UP"));
-            case MotionEvent.ACTION_CANCEL:
-                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_CANCEL"));
-            case MotionEvent.ACTION_MOVE:
-                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_MOVE"));
-            case MotionEvent.ACTION_SCROLL:
-                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_SCROLL"));
-            case MotionEvent.ACTION_HOVER_ENTER:
-                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_HOVER_ENTER"));
-            default:
-                Log.d(LOG_TAG, "in dispatchTouchEvent, event action is something else...");
-        }
+//        switch (ev.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_DOWN"));
+//            case MotionEvent.ACTION_UP:
+//                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_UP"));
+//            case MotionEvent.ACTION_CANCEL:
+//                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_CANCEL"));
+//            case MotionEvent.ACTION_MOVE:
+//                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_MOVE"));
+//            case MotionEvent.ACTION_SCROLL:
+//                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_SCROLL"));
+//            case MotionEvent.ACTION_HOVER_ENTER:
+//                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_HOVER_ENTER"));
+//            default:
+//                Log.d(LOG_TAG, "in dispatchTouchEvent, event action is something else...");
+//        }
         return super.dispatchTouchEvent(ev);
     }
 }

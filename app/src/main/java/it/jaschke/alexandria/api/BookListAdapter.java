@@ -85,7 +85,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookLi
                 public void onClick(View v) {
                     Log.d(LOG_TAG, "in remove onClick");
                     if(mCursor != null && mCursor.moveToPosition(getAdapterPosition())) {
-                        Utility.removeBookFromList(mContext, mCursor.getString(mCursor.getColumnIndex(AlexandriaContract.BookEntry._ID)));
+//                        Utility.removeBookFromList(mContext, mCursor.getString(mCursor.getColumnIndex(AlexandriaContract.BookEntry._ID)));
                     }
                 }
             });
@@ -140,6 +140,13 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookLi
                     }
                 }
             };
+            // If we don't do set the width of the button to just what we need, clicking *close* to the remove button but not on it will still trigger it.
+            //TODO: setWidth does not work. What the hell?! It is **explicitely** mentioned in the docs that it's the same as modifying LayoutParams width!...
+//            bookRemoveButton.setWidth(maxWidth);
+            // This works...
+            bookRemoveButton.getLayoutParams().width = maxWidth;
+            bookRemoveButton.requestLayout();
+
             a.setDuration(500); // in ms
             bookView.startAnimation(a);
 

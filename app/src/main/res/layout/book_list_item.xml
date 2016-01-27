@@ -10,11 +10,13 @@
     <RelativeLayout
         android:id="@+id/bookDelete"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@android:color/holo_red_light"
+        >
 
         <Button
             android:id="@+id/listBookRemove"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
@@ -22,6 +24,7 @@
             android:drawableEnd="@drawable/ic_action_discard"
             android:drawableRight="@drawable/ic_action_discard"
             android:padding="@dimen/small_margin"
+            android:contentDescription="@string/delete"
             />
         <!--android:visibility="gone"-->
     </RelativeLayout>
