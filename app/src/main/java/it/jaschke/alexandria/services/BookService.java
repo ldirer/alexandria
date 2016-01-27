@@ -184,22 +184,15 @@ public class BookService extends IntentService {
         final String CATEGORIES = "categories";
         final String IMG_URL_PATH = "imageLinks";
         final String IMG_URL = "thumbnail";
-        // TODO: add key for http response code.
 
         try {
             JSONObject bookJson = new JSONObject(bookJsonString);
-            // TODO We look for http errors first.
-//            bookJson.has(HTTP_CODE) {}
 
             JSONArray bookArray;
             if(bookJson.has(ITEMS)){
                 bookArray = bookJson.getJSONArray(ITEMS);
             }else{
                 Log.d(LOG_TAG, "No book found");
-                // TODO: he's using a toast here, mb we could use our empty/error view instead.
-                Intent messageIntent = new Intent(MainActivity.MESSAGE_EVENT);
-                messageIntent.putExtra(MainActivity.MESSAGE_KEY, getResources().getString(R.string.not_found));
-                LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
                 setFetchBookStatus(this, FETCH_BOOK_STATUS_NO_BOOK_FOUND);
                 return;
             }

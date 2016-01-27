@@ -4,59 +4,48 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.view.MotionEvent;
 import android.widget.Toast;
-import android.widget.Toolbar;
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import it.jaschke.alexandria.api.Callback;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks, Callback {
 
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment navigationDrawerFragment;
+    private AddBook mAddBookFragment;
+    public static final String LIST_BOOK_FRAGMENT_TAG = "LB_FRAGMENT_TAG";
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence title;
-    public static boolean IS_TABLET = false;
-    private BroadcastReceiver messageReciever;
 
-    public static final String MESSAGE_EVENT = "MESSAGE_EVENT";
-    public static final String MESSAGE_KEY = "MESSAGE_EXTRA";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        IS_TABLET = isTablet();
-        if(IS_TABLET){
-            setContentView(R.layout.activity_main_tablet);
-        }else {
-            setContentView(R.layout.activity_main);
-        }
+        setContentView(R.layout.activity_main);
 
         android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
-
-        messageReciever = new MessageReciever();
-        IntentFilter filter = new IntentFilter(MESSAGE_EVENT);
-        LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever,filter);
 
         navigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -64,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         // Set up the drawer.
         navigationDrawerFragment.setUp(R.id.navigation_drawer,
-                    (DrawerLayout) findViewById(R.id.drawer_layout));
+                (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
     @Override
@@ -72,14 +61,25 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment nextFragment;
-
+        String tag = "";
         switch (position){
             default:
             case 0:
-                nextFragment = new ListOfBooks();
+                tag = LIST_BOOK_FRAGMENT_TAG;
+                ListOfBooks existingFragment = (ListOfBooks) fragmentManager.findFragmentByTag(tag);
+                if (null != existingFragment) {
+                    // Use this existing fragment and don't create a new one!
+                    Log.d(LOG_TAG, "Reusing existing fragment");
+                    nextFragment = existingFragment;
+                }
+                else {
+                    nextFragment = new ListOfBooks();
+                }
+
                 break;
             case 1:
-                nextFragment = new AddBook();
+                mAddBookFragment = new AddBook();
+                nextFragment = mAddBookFragment;
                 break;
             case 2:
                 nextFragment = new About();
@@ -87,21 +87,24 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
         }
 
+        Log.d(LOG_TAG, "Adding a fragment - tag: " + tag);
         fragmentManager.beginTransaction()
-                .replace(R.id.container, nextFragment)
+                .replace(R.id.container, nextFragment, tag)
                 .addToBackStack((String) title)
                 .commit();
     }
 
     public void setTitle(int titleId) {
         title = getString(titleId);
+        Log.d(LOG_TAG, String.format("in setTitle, title=%s, titleid=%d", title, titleId));
     }
 
     public void restoreActionBar() {
+        Log.d(LOG_TAG, "in restoreActionBar");
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(title);
+        actionBar.setDisplayShowTitleEnabled(true);
     }
 
 
@@ -135,7 +138,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     @Override
     protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(messageReciever);
         super.onDestroy();
     }
 
@@ -147,43 +149,51 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         BookDetail fragment = new BookDetail();
         fragment.setArguments(args);
 
-        int id = R.id.container;
         if(findViewById(R.id.right_container) != null){
-            id = R.id.right_container;
+            // We have a two-pane layout.
+            int id = R.id.right_container;
+            getSupportFragmentManager().beginTransaction()
+                    .replace(id, fragment)
+                    .addToBackStack("Book Detail")
+                    .commit();
         }
-        getSupportFragmentManager().beginTransaction()
-                .replace(id, fragment)
-                .addToBackStack("Book Detail")
-                .commit();
-
-    }
-
-    private class MessageReciever extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra(MESSAGE_KEY)!=null){
-                Toast.makeText(MainActivity.this, intent.getStringExtra(MESSAGE_KEY), Toast.LENGTH_LONG).show();
-            }
+        else{
+            // We want to launch a different activity.
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .putExtra(BookDetail.EAN_KEY, ean);
+            startActivity(intent);
         }
+
     }
 
-    public void goBack(View view){
-        getSupportFragmentManager().popBackStack();
-    }
 
-    private boolean isTablet() {
-        return (getApplicationContext().getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK)
-                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(LOG_TAG, "in onActivityResult");
+        super.onActivityResult(requestCode, resultCode, data);
+        IntentResult intentScanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        String eanNumber = intentScanResult.getContents();
+        mAddBookFragment.eanEditText.setText(eanNumber);
     }
 
     @Override
-    public void onBackPressed() {
-        if(getSupportFragmentManager().getBackStackEntryCount()<2){
-            finish();
-        }
-        super.onBackPressed();
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+//        switch (ev.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_DOWN"));
+//            case MotionEvent.ACTION_UP:
+//                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_UP"));
+//            case MotionEvent.ACTION_CANCEL:
+//                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_CANCEL"));
+//            case MotionEvent.ACTION_MOVE:
+//                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_MOVE"));
+//            case MotionEvent.ACTION_SCROLL:
+//                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_SCROLL"));
+//            case MotionEvent.ACTION_HOVER_ENTER:
+//                Log.d(LOG_TAG, String.format("in dispatchTouchEvent, event action is ACTION_HOVER_ENTER"));
+//            default:
+//                Log.d(LOG_TAG, "in dispatchTouchEvent, event action is something else...");
+//        }
+        return super.dispatchTouchEvent(ev);
     }
-
-
 }

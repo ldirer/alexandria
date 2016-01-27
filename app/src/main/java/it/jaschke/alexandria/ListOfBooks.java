@@ -1,20 +1,20 @@
 package it.jaschke.alexandria;
 
-import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import it.jaschke.alexandria.api.BookListAdapter;
@@ -24,8 +24,9 @@ import it.jaschke.alexandria.data.AlexandriaContract;
 
 public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final String LOG_TAG = ListOfBooks.class.getSimpleName();
     private BookListAdapter bookListAdapter;
-    private ListView bookList;
+    private RecyclerView bookList;
     private int position = ListView.INVALID_POSITION;
     private EditText searchText;
 
@@ -46,12 +47,12 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
                 AlexandriaContract.BookEntry.CONTENT_URI,
                 null, // leaving "columns" null just returns all the columns.
                 AlexandriaContract.BookEntry.COLUMN_BOOK_IN_LIST + " = ?", // cols for "where" clause
-                new String[] {"1"}, // values for "where" clause
+                new String[]{"1"}, // values for "where" clause
                 null  // sort order
         );
 
 
-        bookListAdapter = new BookListAdapter(getActivity(), cursor, 0);
+        bookListAdapter = new BookListAdapter(getActivity(), cursor, (Callback) getActivity());
         View rootView = inflater.inflate(R.layout.fragment_list_of_books, container, false);
         searchText = (EditText) rootView.findViewById(R.id.searchText);
         rootView.findViewById(R.id.searchButton).setOnClickListener(
@@ -63,25 +64,17 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
                 }
         );
 
-        bookList = (ListView) rootView.findViewById(R.id.listOfBooks);
+        bookList = (RecyclerView) rootView.findViewById(R.id.listOfBooks);
+        // This is a custom method because we need a reference to recyclerview in the adapter.
+        bookListAdapter.setRecyclerView(bookList);
         bookList.setAdapter(bookListAdapter);
-
-        bookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Cursor cursor = bookListAdapter.getCursor();
-                if (cursor != null && cursor.moveToPosition(position)) {
-                    ((Callback)getActivity())
-                            .onItemSelected(cursor.getString(cursor.getColumnIndex(AlexandriaContract.BookEntry._ID)));
-                }
-            }
-        });
+        bookList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         return rootView;
     }
 
     private void restartLoader(){
+        Log.d(LOG_TAG, "in restartLoader");
         getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 
@@ -92,7 +85,7 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
         selectionArgs.add("1");
 
         String searchStringSelection = AlexandriaContract.BookEntry.COLUMN_TITLE +" LIKE ? OR " + AlexandriaContract.BookEntry.COLUMN_SUBTITLE + " LIKE ? ";
-        String searchString =searchText.getText().toString();
+        String searchString = searchText.getText().toString();
 
         if(searchString.length()>0){
             searchString = "%"+searchString+"%";
@@ -106,13 +99,14 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
                 AlexandriaContract.BookEntry.CONTENT_URI,
                 null,
                 selectionStr,
-                (String[]) selectionArgs.toArray(),
+                selectionArgs.toArray(new String[]{}),
                 null
         );
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.d(LOG_TAG, "in onLoadFinished");
         bookListAdapter.swapCursor(data);
         if (position != ListView.INVALID_POSITION) {
             bookList.smoothScrollToPosition(position);
@@ -125,8 +119,22 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        activity.setTitle(R.string.books);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.d(LOG_TAG, "in onActivityCreated");
+        getActivity().setTitle(R.string.books);
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Make sure we see a new list if we removed an item.
+        restartLoader();
+    }
+
+    public BookListAdapter getAdapter() {
+        Log.d(LOG_TAG, "in getAdapter");
+        return bookListAdapter;
     }
 }
