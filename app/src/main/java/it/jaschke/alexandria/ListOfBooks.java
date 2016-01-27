@@ -135,8 +135,6 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
 
     public BookListAdapter getAdapter() {
         Log.d(LOG_TAG, "in getAdapter");
-        // TODO: I could not get the recyclerview to refresh without calling restartLoader here. Which is kind of cheating ;).
-//        restartLoader();
         return bookListAdapter;
     }
 }
